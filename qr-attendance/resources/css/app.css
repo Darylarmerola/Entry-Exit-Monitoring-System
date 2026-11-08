@@ -1,0 +1,16 @@
+@import "tailwindcss";
+@source "../views/**/*.blade.php";
+
+/* QR Attendance dashboard styling. Keep the existing Bootstrap dashboard visual language. */
+:root{--qa-navy:#14213d;--qa-blue:#2457c5;--qa-bg:#f4f7fb;--qa-text:#172033;--qa-muted:#65718a}
+html{min-height:100%}body{min-height:100vh;background:var(--qa-bg);color:var(--qa-text)}
+.navbar{background:var(--qa-navy)}.navbar-brand,.navbar .nav-link{color:#fff!important}
+.card{border:0;border-radius:16px;box-shadow:0 6px 24px rgb(23 32 51 / 5%)}
+.btn-primary{background:var(--qa-blue);border-color:var(--qa-blue)}
+.btn-primary:hover,.btn-primary:focus{background:#1c469f;border-color:#1c469f}
+.hero{padding:3rem;color:#fff;border-radius:22px;background:linear-gradient(120deg,var(--qa-navy),var(--qa-blue))}
+.table thead th{color:var(--qa-muted);font-size:.82rem;text-transform:uppercase;letter-spacing:.035em}
+#reader{width:100%;max-width:520px;margin-inline:auto;overflow:hidden;border-radius:14px}
+#reader video{width:100%;max-width:100%;border-radius:12px;object-fit:cover}
+#qrcode img,#qrcode canvas{max-width:100%;height:auto}.camera-controls{max-width:560px;margin-inline:auto}
+@media(max-width:575.98px){.hero{padding:1.5rem}.hero h1{font-size:2rem}main.container{padding-inline:1rem}#reader{min-height:240px}}
