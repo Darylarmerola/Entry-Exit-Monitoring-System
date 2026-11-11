@@ -4,7 +4,7 @@
 <div class="card p-4"><h2 class="fw-bold">{{ $user->exists?'Edit account':'Add account' }}</h2>
 <form method="POST" action="{{ $user->exists?route('admin.users.update',$user):route('admin.users.store') }}">@csrf @if($user->exists)@method('PUT')@endif
 <div class="row g-3">
-<div class="col-md-6"><label class="form-label">Account ID</label><input class="form-control" value="{{ old('school_id', $user->school_id) }}" readonly placeholder="Generated automatically after saving"><div class="form-text">Student and teacher IDs are generated automatically.</div></div>
+@if($user->exists)<div class="col-md-6"><label class="form-label">ID</label><input class="form-control" value="{{ $user->school_id ?? '—' }}" readonly></div>@endif
 @foreach(['name'=>'First name','lastname'=>'Last name','age'=>'Age','course'=>'Course','email'=>'Email','username'=>'Username'] as $field=>$label)
 <div class="col-md-6"><label class="form-label">{{ $label }}</label><input name="{{ $field }}" class="form-control" value="{{ old($field,$user->$field) }}" {{ $field==='email'?'type=email':($field==='age'?'type=number':'') }}></div>
 @endforeach

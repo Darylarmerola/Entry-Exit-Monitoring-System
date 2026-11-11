@@ -3,11 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Services\UserIdGenerator;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
-use Illuminate\Support\Facades\DB;
-use App\Services\UserIdGenerator;
 
 class AdminController extends Controller
 {
@@ -31,6 +31,7 @@ class AdminController extends Controller
             }
             User::create($data);
         });
+
         return redirect()->route('admin.dashboard')->with('success','Account created.');
     }
 
@@ -38,14 +39,18 @@ class AdminController extends Controller
     {
         $data = $this->validated($request, $user);
         if (empty($data['password'])) unset($data['password']);
+
         DB::transaction(function () use ($data, $user) {
             if ($data['role'] !== $user->role) {
                 $data['school_id'] = in_array($data['role'], ['student', 'teacher'], true)
                     ? UserIdGenerator::next($data['role'])
                     : null;
+            } else {
+                unset($data['school_id']);
             }
             $user->update($data);
         });
+
         return redirect()->route('admin.dashboard')->with('success','Account updated.');
     }
 

@@ -3,12 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Services\UserIdGenerator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Validation\Rules\Password;
-use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
-use App\Services\UserIdGenerator;
+use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Password;
 
 class RegistrationController extends Controller
 {
@@ -29,12 +29,10 @@ class RegistrationController extends Controller
         ]);
 
         $user = DB::transaction(function () use ($data) {
-            $schoolId = UserIdGenerator::next($data['role']);
+            $data['school_id'] = UserIdGenerator::next($data['role']);
+            $data['is_active'] = true;
 
-            return User::create($data + [
-                'school_id' => $schoolId,
-                'is_active' => true,
-            ]);
+            return User::create($data);
         });
 
         Auth::login($user);
