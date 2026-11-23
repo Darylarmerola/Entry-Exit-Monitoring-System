@@ -4,6 +4,7 @@
 <div class="row justify-content-center"><div class="col-lg-7"><div class="card p-4 text-center"><h2 class="fw-bold">Scan attendance QR</h2><p class="text-secondary">Allow camera access and point it at your teacher's attendance QR code.</p><div id="reader" class="mx-auto"></div><div class="camera-controls mt-3 d-flex flex-wrap gap-2 justify-content-center"><button type="button" id="start-camera" class="btn btn-primary">Start camera</button><button type="button" id="switch-camera" class="btn btn-outline-primary" disabled>Switch camera</button><button type="button" id="stop-camera" class="btn btn-outline-secondary" disabled>Stop camera</button></div><div id="scan-result" class="alert alert-info mt-3">Camera ready when you start scanning.</div><div id="attendance-actions" class="mt-3" hidden><p id="time-in-detail" class="text-success fw-semibold mb-2"></p><button type="button" id="time-out-button" class="btn btn-warning btn-lg">Time out</button></div><a href="{{ route('student.dashboard') }}" class="btn btn-outline-secondary mt-2">Back to dashboard</a></div></div></div>
 @endsection
 @push('scripts')
+
 <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 <script>
 const resultBox = document.getElementById('scan-result');
@@ -25,30 +26,35 @@ function showMessage(message, type = 'info') {
     resultBox.className = `alert alert-${type} mt-3`;
     resultBox.textContent = message;
 }
+
 function showAttendanceState(data) {
     attendanceActions.hidden = !data.can_time_out;
     timeOutButton.disabled = false;
-    timeInDetail.textContent = data.time_in ? `Time-in recorded (Philippine time): ${data.time_in}` : '';
+    timeInDetail.textContent = data.time_in ? `Time-in recorded: ${data.time_in}` : '';
     if (data.status === 'completed') {
         attendanceActions.hidden = true;
         if (data.time_out) timeInDetail.textContent += ` · Time-out: ${data.time_out}`;
     }
 }
+
 function decoded(text) {
     try { const url = new URL(text); return url.searchParams.get('token') || text.trim(); }
     catch (_) { return text.trim(); }
 }
+
 async function submitToken(token) {
     if (submitting || !token) return;
     submitting = true;
     currentToken = token;
     showMessage('Submitting time-in...', 'info');
+    
     try {
         const response = await fetch(@json(route('student.attendance.scan')), {
             method: 'POST',
             headers: {'Content-Type':'application/json','Accept':'application/json','X-CSRF-TOKEN':document.querySelector('meta[name="csrf-token"]').content},
             body: JSON.stringify({token})
         });
+        
         const data = await response.json();
         showMessage(data.message || (response.ok ? 'Attendance recorded.' : 'Unable to record attendance.'), response.ok ? 'success' : 'danger');
         if (response.ok) showAttendanceState(data);
@@ -58,6 +64,7 @@ async function submitToken(token) {
         showMessage('Unable to submit attendance. Check your connection and try again.', 'danger');
     } finally { submitting = false; }
 }
+
 async function submitTimeOut() {
     if (!currentToken || timeOutButton.disabled) return;
     timeOutButton.disabled = true;
@@ -77,6 +84,7 @@ async function submitTimeOut() {
         timeOutButton.disabled = false;
     }
 }
+
 async function stopCamera() {
     if (scanner && running) {
         try { await scanner.stop(); } catch (_) {}
@@ -86,6 +94,7 @@ async function stopCamera() {
     stopButton.disabled = true;
     switchButton.disabled = cameras.length < 2;
 }
+
 async function startCamera(index = cameraIndex) {
     if (!window.isSecureContext && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
         showMessage('Camera access requires HTTPS. Open the secure https:// address (for example, your ngrok HTTPS URL).', 'danger');
@@ -114,6 +123,7 @@ async function startCamera(index = cameraIndex) {
         stopButton.disabled = true;
     }
 }
+
 async function loadCameras() {
     try {
         cameras = await Html5Qrcode.getCameras();

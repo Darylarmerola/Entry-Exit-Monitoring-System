@@ -31,6 +31,21 @@ class TeacherController extends Controller
         return redirect()->route('teacher.sessions.show',$session)->with('success','Attendance session created.');
     }
 
+    // Delete an attendance session created by the logged-in teacher.
+    public function destroySession(AttendanceSession $attendanceSession)
+    {
+    // Make sure the teacher owns this attendance session.
+        $this->authorizeSession($attendanceSession);
+    // Delete the session. Its attendance records are also deleted
+    // because the database relationship uses cascadeOnDelete().
+        $attendanceSession->delete();
+
+    // Return to the teacher dashboard with a success message.
+        return redirect()
+            ->route('teacher.dashboard')
+            ->with('success', 'Attendance session deleted successfully.');
+    }
+
     public function showSession(AttendanceSession $attendanceSession)
     {
         $this->authorizeSession($attendanceSession);

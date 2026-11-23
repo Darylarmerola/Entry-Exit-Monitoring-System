@@ -39,7 +39,7 @@ This is a Laravel 12 application source package (application files, not `vendor/
 8. Visit http://127.0.0.1:8000
 
 ## Initial administrator accounts
-- Angela / `olasiman`
+- Angela / `Olasiman`
 - Nicole / `Vacal`
 - Daryl / `Armerola`
 

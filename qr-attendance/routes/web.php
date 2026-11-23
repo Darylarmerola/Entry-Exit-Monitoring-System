@@ -38,6 +38,8 @@ Route::middleware(['auth', 'role:teacher'])->prefix('teacher')->name('teacher.')
     Route::post('/sessions/{attendanceSession}/toggle', [TeacherController::class, 'toggleSession'])->name('sessions.toggle');
     Route::delete('/sessions/{attendanceSession}/attendances/{attendance}', [TeacherController::class, 'removeAttendance'])->name('attendances.remove');
     Route::get('/sessions/{attendanceSession}/export', [TeacherController::class, 'export'])->name('sessions.export');
+    // Delete an attendance session created by the logged-in teacher.
+    Route::delete('/sessions/{attendanceSession}', [TeacherController::class, 'destroySession'])->name('sessions.destroy');
 });
 
 Route::middleware(['auth', 'role:student'])->prefix('student')->name('student.')->group(function () {

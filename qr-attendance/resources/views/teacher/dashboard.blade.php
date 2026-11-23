@@ -1,8 +1,57 @@
 @extends('layouts.app')
 @section('title','Teacher dashboard')
 @section('content')
-<div class="d-flex justify-content-between align-items-center mb-4"><div><h2 class="fw-bold">Teacher dashboard</h2><p class="text-secondary mb-0">Create and manage attendance sessions.</p></div><a href="{{ route('teacher.sessions.create') }}" class="btn btn-primary">+ Create attendance</a></div>
-<div class="card p-3"><h5 class="mb-3">Your attendance sessions</h5><div class="table-responsive"><table class="table align-middle"><thead><tr><th>Date</th><th>Course</th><th>Subject</th><th>Attendees</th><th>Status</th><th></th></tr></thead><tbody>
-@forelse($sessions as $session)<tr><td>{{ $session->session_date->format('M d, Y') }}</td><td>{{ $session->course }}</td><td>{{ $session->subject }}</td><td>{{ $session->attendances_count }}</td><td>{{ $session->is_active?'Active':'Closed' }}</td><td><a class="btn btn-sm btn-outline-primary" href="{{ route('teacher.sessions.show',$session) }}">Manage</a></td></tr>@empty<tr><td colspan="6" class="text-center text-secondary">No sessions created yet.</td></tr>@endforelse
-</tbody></table></div></div>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div><h2 class="fw-bold">Teacher dashboard</h2><p class="text-secondary mb-0">Create and manage attendance sessions.</p></div>
+    <a href="{{ route('teacher.sessions.create') }}" class="btn btn-primary">+ Create attendance</a></div>
+    <div class="card p-3"><h5 class="mb-3">Your attendance sessions</h5>
+    <div class="table-responsive">
+        <table class="table align-middle">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Course</th>
+                    <th>Subject</th>
+                    <th>Attendees</th>
+                    <th>Status</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse($sessions as $session)
+                <tr>
+                    <td>{{ $session->session_date->format('M d, Y') }}</td>
+                    <td>{{ $session->course }}</td>
+                    <td>{{ $session->subject }}</td>
+                    <td>{{ $session->attendances_count }}</td>
+                    <td>{{ $session->is_active?'Active':'Closed' }}</td>
+                    <td class="text-nowrap">
+                    {{-- Open the attendance session management page. --}}
+                        <a class="btn btn-sm btn-outline-primary"
+                            href="{{ route('teacher.sessions.show', $session) }}">
+                            Manage
+                        </a>
+
+                    {{-- Delete this attendance session after confirmation. --}}
+                        <form class="d-inline"
+                            method="POST"
+                            action="{{ route('teacher.sessions.destroy', $session) }}"
+                            onsubmit="return confirm('Are you sure you want to delete this attendance session? This will also delete its attendance records.')">
+                            @csrf
+                            @method('DELETE')
+
+                            <button type="submit" class="btn btn-sm btn-outline-danger">
+                                Delete
+                            </button>
+                        </form>
+                    </td>
+                </tr>@empty
+                <tr>
+                    <td colspan="6" class="text-center text-secondary">No sessions created yet.</td>
+                </tr>
+                    @endforelse
+            </tbody>
+        </table>
+    </div>
+</div>
 @endsection
